@@ -91,7 +91,7 @@ public class TopologyDemoApplication {
 		SpringApplication.run(TopologyDemoApplication.class, args);
 	}
 
-	public static String ports_lists = System.getProperty("ports_list", "12000-12030");
+	public static String ports_lists = System.getProperty("ports_list", "12038-12050");
 	public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
 
 	//public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
