@@ -1,12 +1,11 @@
 package com.example.demo;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.api.common.Attributes;
-
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
@@ -20,6 +19,7 @@ import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @Configuration
 @SpringBootApplication
-@RequestMapping(path = "/apm/")
+@RequestMapping(path = "/")
 public class TopologyDemoApplication {
 
 	private static Integer myPort = 0;
@@ -92,7 +92,9 @@ public class TopologyDemoApplication {
 	}
 
 	public static String ports_lists = System.getProperty("ports_list", "12000-12010");
-	public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
+	public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
+
+	//public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
 
 	@RequestMapping("/random")
 	public @ResponseBody
@@ -106,14 +108,17 @@ public class TopologyDemoApplication {
 				Set<Integer> portSet = getPortSet(ports_lists);
 				// messing up to topology connections for spans to be visible randomly
 				int maxCount = ThreadLocalRandom.current().nextInt(1, portSet.size() / 6);
-
-				portSet.stream().limit(maxCount).forEach(port -> {
-					if(port != myPort) {
-						// lets make a random 3-5 ports (any) call here as child spans
-						System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
-						runChildSpan(port, parentSpan);
-					}
-				});
+				try {
+					portSet.stream().limit(maxCount).forEach(port -> {
+						if (port != myPort) {
+							// lets make a random 3-5 ports (any) call here as child spans
+							System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
+							runChildSpan(port, parentSpan);
+						}
+					});
+				}catch(Exception e){
+					//ignore
+				}
 				return ResponseEntity.ok(String.valueOf(ThreadLocalRandom.current().nextInt(10, 2000)));
 			} catch (Exception e) {
 				parentSpan.setStatus(StatusCode.ERROR, "Error in calling service root call demo_x");
