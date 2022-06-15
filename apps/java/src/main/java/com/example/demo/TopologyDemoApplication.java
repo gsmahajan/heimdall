@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @Configuration
 @SpringBootApplication
-@RequestMapping(path = "/")
+@RequestMapping(path = "/apm")
 public class TopologyDemoApplication {
 
 	private static Integer myPort = 0;
@@ -74,24 +74,11 @@ public class TopologyDemoApplication {
 
 	}
 
-//	static{
-//		SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-//				.addSpanProcessor(BatchSpanProcessor.builder(OtlpGrpcSpanExporter.builder().build()).build())//NoopSpanExporter
-//				.build();
-//
-//		OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
-//				.setTracerProvider(sdkTracerProvider)
-//				.setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
-//				.buildAndRegisterGlobal();
-//		tracer = openTelemetry.getTracer("topology-psr-instrumentation");
-//
-//	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(TopologyDemoApplication.class, args);
 	}
 
-	public static String ports_lists = System.getProperty("ports_list", "12038-12050");
+	public static String ports_lists = System.getProperty("ports_list", "12000-12051");
 	public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
 
 	//public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
@@ -181,7 +168,7 @@ public class TopologyDemoApplication {
 			// self loop topology hiding
 			RestTemplate restTemplate = new RestTemplate();
 			String output = restTemplate.getForObject("http://"+hosts_lists.split(",")[port%3] + ":" + port + "/apm/random?requestId=" + UUID.randomUUID().toString(), String.class);
-			System.out.println("port=" + port + " returns output " + output);
+			System.out.println("host: "+(hosts_lists.split(",")[port%3])+"port=" + port + " returns output " + output);
 		} catch (Exception g) {
 			childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
 		} finally {
