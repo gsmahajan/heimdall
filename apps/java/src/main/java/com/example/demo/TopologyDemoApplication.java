@@ -91,7 +91,7 @@ public class TopologyDemoApplication {
 		SpringApplication.run(TopologyDemoApplication.class, args);
 	}
 
-	public static String ports_lists = System.getProperty("ports_list", "12000-12010");
+	public static String ports_lists = System.getProperty("ports_list", "12000-12030");
 	public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
 
 	//public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
@@ -119,6 +119,19 @@ public class TopologyDemoApplication {
 				}catch(Exception e){
 					//ignore
 				}
+
+				try {
+					portSet.stream().limit(maxCount).forEach(port -> {
+						if (port != myPort) {
+							// lets make a random 3-5 ports (any) call here as child spans
+							System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
+							runChildSpanLocal(port, parentSpan);
+						}
+					});
+				}catch(Exception e){
+					//ignore
+				}
+
 				return ResponseEntity.ok(String.valueOf(ThreadLocalRandom.current().nextInt(10, 2000)));
 			} catch (Exception e) {
 				parentSpan.setStatus(StatusCode.ERROR, "Error in calling service root call demo_x");
@@ -140,6 +153,23 @@ public class TopologyDemoApplication {
 			portsResult.add(i);
 		}
 		return portsResult;
+	}
+
+	public void runChildSpanLocal(Integer port, Span parentSpan){
+		Span childSpan = tracer.spanBuilder("child_port_calling")
+				.setParent(Context.current().with(parentSpan))
+				.startSpan();
+		try {
+			childSpan.setStatus(StatusCode.OK);
+			// self loop topology hiding
+			RestTemplate restTemplate = new RestTemplate();
+			String output = restTemplate.getForObject("http://localhost:" + port + "/apm/random?requestId=" + UUID.randomUUID().toString(), String.class);
+			System.out.println("port=" + port + " returns output " + output);
+		} catch (Exception g) {
+			childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+		} finally {
+			childSpan.end();
+		}
 	}
 
 	public void runChildSpan(Integer port, Span parentSpan){
