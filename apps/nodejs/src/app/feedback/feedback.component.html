@@ -1,0 +1,37 @@
+<div style="text-align:center">
+    
+    <div class="container">
+      <div class="col-md-6 mx-auto">
+        <div class="form-area"> 
+          <form role="form">
+              <h1 class="well">
+                  Smart Pharmacy Feedback
+                </h1>
+            <br style="clear:both">
+            <h3 style="margin-bottom: 25px; text-align: left;">Give Feedback</h3>
+            <div class="form-group">     
+              <label for="email" class="float-left form-label text-left">Email*</label>
+              <div class="float-left form-input-wrapper">
+              <input type="email" class="form-control" id="email" name="email" placeholder="Email" [(ngModel)]="data.email" required>
+            </div>
+            </div>
+            <div class="form-group">
+                <label for="email" class="float-left form-label text-left">Subject*</label>
+                <div class="float-left form-input-wrapper">
+                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" [(ngModel)]="data.subject" required>
+                    </div>
+            </div>
+            <div class="form-group">
+                <label for="email" class="float-left form-label text-left">Description*</label>
+                <div class="float-left form-input-wrapper">
+                    <textarea class="form-control" type="description" id="description" name="description" placeholder="Description" [(ngModel)]="data.description" maxlength="140" rows="7"></textarea>              
+            </div>
+                  </div>
+            <button type="button" id="submit" name="submit" class="btn btn-primary pull-left mr-3" (click)="save()">Submit</button>
+            <button type="button" id="cancel" name="cancel" class="btn btn-primary pull-left" (click)="cancel()">Cancel</button>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

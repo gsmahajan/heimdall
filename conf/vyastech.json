@@ -1,0 +1,274 @@
+{
+  "connections": [
+    {
+
+      "source": "VyasTech-PaymentAcknowldgeRepositoryService",
+      "links": "VyasTech-ReportingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentAcknowldgeRepositoryService",
+      "links": "VyasTech-SellerShopsService",
+      }
+    },
+    {
+
+      "source": "VyasTech-HeimdallAdminService",
+      "links": "VyasTech-PaymentAcknowldgeReposilinksitoryService",
+      }
+    },
+    {
+
+      "source": "VyasTech-EmailService",
+      "links": "VyasTech-HeimdallAdminService",
+      }
+    },
+    {
+
+      "source": "VyasTech-FeedbackSystem",
+      "links": "VyasTech-CustomerSupportService",
+      }
+    },
+    {
+
+      "source": "VyasTech-ReportingService",
+      "links": "VyasTech-ReportingWebPortalManagement",
+      }
+    },
+    {
+
+      "source": "VyasTech-ReportingService",
+      "links": "VyasTech-CustomerSupportService",
+      }
+    },
+    {
+
+      "source": "VyasTech-ReportingService",
+      "links": "VyasTech-EmailService",
+      }
+    },
+    {
+
+      "source": "VyasTech-ReportingService",
+      "links": "VyasTech-SmsServiceProviderService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-FaultToleranceAttackService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-DeliveryReporter",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-ProductService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-OrderService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-ReportingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-PaymentService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-CheckoutService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DiscoveryService",
+      "links": "VyasTech-CartService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PushNotificationService",
+      "links": "VyasTech-WebFrontEnd",
+      }
+    },
+    {
+
+      "source": "VyasTech-PushNotificationService",
+      "links": "VyasTech-DiscoveryService",
+      }
+    },
+    {
+
+      "source": "VyasTech-CheckoutService",
+      "links": "VyasTech-DeliveryReporter",
+      }
+    },
+    {
+
+      "source": "VyasTech-CheckoutService",
+      "links": "VyasTech-PaymentPartnerExternalService",
+      }
+    },
+    {
+
+      "source": "VyasTech-CheckoutService",
+      "links": "VyasTech-EmailService",
+      }
+    },
+    {
+
+      "source": "VyasTech-CheckoutService",
+      "links": "VyasTech-PaymentService",
+      }
+    },
+    {
+
+      "source": "VyasTech-QueingService",
+      "links": "VyasTech-PaymentAcknowldgeReposilinksryService",
+      }
+    },
+    {
+
+      "source": "VyasTech-QueingService",
+      "links": "VyasTech-SellerShopsService",
+      }
+    },
+    {
+
+      "source": "VyasTech-WebGatewayBackend",
+      "links": "VyasTech-LogicMonilinksrColleclinksr",
+      }
+    },
+    {
+
+      "source": "VyasTech-WebGatewayBackend",
+      "links": "VyasTech-DiscoveryService",
+      }
+    },
+    {
+
+      "source": "VyasTech-WebGatewayBackend",
+      "links": "VyasTech-ContentSecurityPolicyService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DeliveryReporter",
+      "links": "VyasTech-CuslinksmerSupportService",
+      }
+    },
+    {
+
+      "source": "VyasTech-DeliveryReporter",
+      "links": "VyasTech-ReportingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentPartnerExternalService",
+      "links": "VyasTech-ReportingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentPartnerExternalService",
+      "links": "VyasTech-PaymentService",
+      }
+    },
+    {
+
+      "source": "VyasTech-WebFrontEnd",
+      "links": "VyasTech-WebGatewayBackend",
+      }
+    },
+    {
+
+      "source": "VyasTech-OrderService",
+      "links": "VyasTech-ProductService",
+      }
+    },
+    {
+
+      "source": "VyasTech-OrderService",
+      "links": "VyasTech-PriceRangeService",
+      }
+    },
+    {
+
+      "source": "VyasTech-OrderService",
+      "links": "VyasTech-SlinkscksService",
+      }
+    },
+    {
+
+      "source": "VyasTech-OrderService",
+      "links": "VyasTech-ReportingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-OrderService",
+      "links": "VyasTech-PaymentService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentService",
+      "links": "VyasTech-QueingService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentService",
+      "links": "VyasTech-EmailService",
+      }
+    },
+    {
+
+      "source": "VyasTech-PaymentService",
+      "links": "VyasTech-SmsServiceProviderService",
+      }
+    },
+    {
+
+      "source": "VyasTech-SmsServiceProviderService",
+      "links": "VyasTech-HeimdallAdminService",
+      }
+    },
+    {
+
+      "source": "VyasTech-BlaBla",
+      "links": "VyasTech-PushNotificationService",
+      }
+    },
+    {
+
+      "source": "VyasTech-SellerShopsService",
+      "links": "VyasTech-SlinkscksService",
+      }
+    },
+    {
+
+      "source": "VyasTech-SellerShopsService",
+      links": "VyasTech-OrderService",
+      }
+    }
+  ]
+}
