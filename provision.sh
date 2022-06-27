@@ -6,12 +6,12 @@ key=/Users/girishmahajan/girish_topology.pem
 if [ "$#" -ge "2" ]; then
 
 ssh -i $key ubuntu@logistics killall java
-ssh -i $key ubuntu@logistics killall java
+ssh -i $key ubuntu@pharmacy killall java
 ssh -i $key ubuntu@automobile killall java
 
 ssh -i $key ubuntu@pharmacy rm -rf /home/ubuntu/logicmonitor/heimdall/
 ssh -i $key ubuntu@automobile rm -rf /home/ubuntu/logicmonitor/heimdall/
-ssh -i $key ubuntu@pharmacy rm -rf /home/ubuntu/logicmonitor/heimdall/
+ssh -i $key ubuntu@logistics rm -rf /home/ubuntu/logicmonitor/heimdall/
 
 
 scp -i $key -r /Users/girishmahajan/dev/heimdall/clone.sh ubuntu@logistics:/home/ubuntu/logicmonitor/
