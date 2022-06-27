@@ -19,9 +19,9 @@ scp -i $key -r /Users/girishmahajan/dev/heimdall/clone.sh ubuntu@automobile:/hom
 scp -i $key -r /Users/girishmahajan/dev/heimdall/clone.sh ubuntu@pharmacy:/home/ubuntu/logicmonitor/
 
 
-ssh -i $key ubuntu@logistics /home/ubuntu/logicmonitor/clone.sh &
-ssh -i $key ubuntu@automobile /home/ubuntu/logicmonitor/clone.sh &
-ssh -i $key ubuntu@pharmacy /home/ubuntu/logicmonitor/clone.sh &
+ssh -i $key ubuntu@logistics /home/ubuntu/logicmonitor/clone.sh 
+ssh -i $key ubuntu@automobile /home/ubuntu/logicmonitor/clone.sh 
+ssh -i $key ubuntu@pharmacy /home/ubuntu/logicmonitor/clone.sh 
 fi
 
 sleep 20

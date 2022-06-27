@@ -19,7 +19,6 @@ import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.ResponseEntity;
@@ -40,141 +39,141 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping(path = "/apm")
 public class TopologyDemoApplication {
 
-	private static Integer myPort = 0;
+    private static Integer myPort = 0;
 
-	@EventListener
-	public void onApplicationEvent(final ServletWebServerInitializedEvent event) {
-		myPort = event.getWebServer().getPort();
-	}
+    @EventListener
+    public void onApplicationEvent(final ServletWebServerInitializedEvent event) {
+        myPort = event.getWebServer().getPort();
+    }
 
-	static Tracer tracer;
+    static Tracer tracer;
 
-	static {
-		AttributesBuilder attrBuilders = Attributes.builder()
-				.put(ResourceAttributes.SERVICE_NAME, System.getProperty("otel.resource.attributes", "demo_x"))
-				.put(ResourceAttributes.SERVICE_NAMESPACE, "US-West-2")
-				.put(ResourceAttributes.HOST_NAME, System.getProperty("otel.resource.attributes", "foobar"));
+    static {
+        AttributesBuilder attrBuilders = Attributes.builder()
+                .put(ResourceAttributes.SERVICE_NAME, System.getProperty("otel.resource.attributes", "demo_x"))
+                .put(ResourceAttributes.SERVICE_NAMESPACE, "US-West-2")
+                .put(ResourceAttributes.HOST_NAME, System.getProperty("otel.resource.attributes", "foobar"));
 
-		Resource serviceResource = Resource.create(attrBuilders.build());
-		OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
-				.setEndpoint(System.getProperty("otel.exporter.otlp.endpoint", "http://localhost:4318"))
-				.build();
+        Resource serviceResource = Resource.create(attrBuilders.build());
+        OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
+                .setEndpoint(System.getProperty("otel.exporter.otlp.endpoint", "http://localhost:4318"))
+                .build();
 
-		SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-				.addSpanProcessor(BatchSpanProcessor.builder(spanExporter)
-						.setScheduleDelay(100, TimeUnit.MILLISECONDS).build())
-				.setResource(serviceResource)
-				.build();
+        SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+                .addSpanProcessor(BatchSpanProcessor.builder(spanExporter)
+                        .setScheduleDelay(100, TimeUnit.MILLISECONDS).build())
+                .setResource(serviceResource)
+                .build();
 
-		OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
-				.setTracerProvider(sdkTracerProvider)
-				.setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance())).build();
+        OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+                .setTracerProvider(sdkTracerProvider)
+                .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance())).build();
 
-		tracer = openTelemetry.getTracer(System.getProperty("host.name", "localhost") + "-instrumentation");
+        tracer = openTelemetry.getTracer(System.getProperty("host.name", "localhost") + "-instrumentation");
 
-	}
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(TopologyDemoApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TopologyDemoApplication.class, args);
+    }
 
-	public static String ports_lists = System.getProperty("ports_list", "12000-12020");
-	public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
+    public static String ports_lists = System.getProperty("ports_list", "12000-12020");
+    public static String hosts_lists = System.getProperty("hosts_list", "logistics,automobile,pharmacy");
 
-	//public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
+    //public static String hosts_lists = System.getProperty("hosts_list", "10.55.13.6,10.55.13.227,10.55.13.130");
 
-	@RequestMapping("/random")
-	public @ResponseBody
-	ResponseEntity<String> getRandom() {
-		System.out.println("My Port => "+myPort);
-		if(tracer !=null) {
-			Span parentSpan = tracer.spanBuilder("random_apm_generator_").startSpan();
+    @RequestMapping("/random")
+    public @ResponseBody
+    ResponseEntity<String> getRandom() {
+        System.out.println("My Port => " + myPort);
+        if (tracer != null) {
+            Span parentSpan = tracer.spanBuilder("apm_topology_" + myPort).startSpan();
 
-			try (Scope scope = parentSpan.makeCurrent()) {
+            try (Scope scope = parentSpan.makeCurrent()) {
 
-				Set<Integer> portSet = getPortSet(ports_lists);
-				// messing up to topology connections for spans to be visible randomly
-				int maxCount = ThreadLocalRandom.current().nextInt(1, portSet.size() / 6);
-				try {
-					portSet.stream().limit(maxCount).forEach(port -> {
-						if (port != myPort) {
-							// lets make a random 3-5 ports (any) call here as child spans
-							System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
-							runChildSpan(port, parentSpan);
-						}
-					});
-				}catch(Exception e){
-					//ignore
-				}
+                Set<Integer> portSet = getPortSet(ports_lists);
+                // messing up to topology connections for spans to be visible randomly
+                int maxCount = ThreadLocalRandom.current().nextInt(1, portSet.size() / 6);
+                try {
+                    portSet.stream().limit(maxCount).forEach(port -> {
+                        if (port != myPort) {
+                            // lets make a random 3-5 ports (any) call here as child spans
+                            System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
+                            runChildSpan(port, parentSpan);
+                        }
+                    });
+                } catch (Exception g) {
+                    parentSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+                }
 
-				try {
-					portSet.stream().limit(maxCount).forEach(port -> {
-						if (port != myPort) {
-							// lets make a random 3-5 ports (any) call here as child spans
-							System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
-							runChildSpanLocal(port, parentSpan);
-						}
-					});
-				}catch (Exception g) {
-					parentSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
-				} finally {
-					parentSpan.end();
-				}
+                try {
+                    portSet.stream().limit(maxCount).forEach(port -> {
+                        if (port != myPort) {
+                            // lets make a random 3-5 ports (any) call here as child spans
+                            System.out.println("Running child span by myPort=" + myPort + " to child => port=" + port);
+                            runChildSpanLocal(port, parentSpan);
+                        }
+                    });
+                } catch (Exception g) {
+                    parentSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+                }
+                return ResponseEntity.ok(String.valueOf(ThreadLocalRandom.current().nextInt(10, 2000)));
+            } catch (Exception e) {
+                parentSpan.setStatus(StatusCode.ERROR, "Error in calling service root call demo_x");
+            } finally {
+                parentSpan.end();
+            }
+        }
+        return ResponseEntity.ok("tracing setup error");
+    }
 
-				return ResponseEntity.ok(String.valueOf(ThreadLocalRandom.current().nextInt(10, 2000)));
-			} catch (Exception e) {
-				parentSpan.setStatus(StatusCode.ERROR, "Error in calling service root call demo_x");
-			} finally {
-				parentSpan.end();
-			}
-		}
-		return ResponseEntity.ok("tracing setup error");
-	}
+    public Set<Integer> getPortSet(String input) {
+        String[] foo = input.split("-");
 
-	public Set<Integer> getPortSet(String input){
-		String [] foo = input.split("-");
+        Integer begin = Integer.parseInt(foo[0]);
+        Integer end = Integer.parseInt(foo[1]);
 
-		Integer begin = Integer.parseInt(foo[0]);
-		Integer end = Integer.parseInt(foo[1]);
+        Set<Integer> portsResult = new HashSet<>();
+        for (int i = begin; i <= end; ++i) {
+            portsResult.add(i);
+        }
+        return portsResult;
+    }
 
-		Set<Integer> portsResult = new HashSet<>();
-		for (int i = begin; i <= end; ++i){
-			portsResult.add(i);
-		}
-		return portsResult;
-	}
+    public void runChildSpanLocal(Integer port, Span parentSpan) {
+        Span childSpan = tracer.spanBuilder("child_local_calling_for_port="+port)
+                .setParent(Context.current().with(parentSpan))
+                .startSpan();
+        try {
+            childSpan.setStatus(StatusCode.OK);
+            // self loop topology hiding
+            RestTemplate restTemplate = new RestTemplate();
+            String output = restTemplate.getForObject("http://localhost:" + port + "/apm/random?requestId=" + UUID.randomUUID().toString(), String.class);
+            System.out.println("port=" + port + " returns output =>" + "http://localhost:" + port + "/apm/random?requestId=" + UUID.randomUUID().toString());
+        } catch (Exception g) {
+            childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+        } finally {
+            childSpan.end();
+        }
+    }
 
-	public void runChildSpanLocal(Integer port, Span parentSpan){
-		Span childSpan = tracer.spanBuilder("child_port_calling")
-				.setParent(Context.current().with(parentSpan))
-				.startSpan();
-		try {
-			childSpan.setStatus(StatusCode.OK);
-			// self loop topology hiding
-			RestTemplate restTemplate = new RestTemplate();
-			String output = restTemplate.getForObject("http://localhost:" + port + "/apm/random?requestId=" + UUID.randomUUID().toString(), String.class);
-			System.out.println("port=" + port + " returns output " + output);
-		} catch (Exception g) {
-			childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
-		} finally {
-			childSpan.end();
-		}
-	}
+    public void runChildSpan(Integer port, Span parentSpan) {
+		String host = hosts_lists.split(",")[port % 3];
+		String url = "http://" + host + ":" + port + "/apm/random?requestId=" + UUID.randomUUID().toString();
+        Span childSpan = tracer.spanBuilder("child_remote for url=>"+url)
+                .setParent(Context.current().with(parentSpan))
+                .startSpan();
+        try {
+            childSpan.setStatus(StatusCode.OK);
 
-	public void runChildSpan(Integer port, Span parentSpan){
-		Span childSpan = tracer.spanBuilder("child_port_calling")
-				.setParent(Context.current().with(parentSpan))
-				.startSpan();
-		try {
-			childSpan.setStatus(StatusCode.OK);
-			// self loop topology hiding
-			RestTemplate restTemplate = new RestTemplate();
-			String output = restTemplate.getForObject("http://"+hosts_lists.split(",")[port%3] + ":" + port + "/apm/random?requestId=" + UUID.randomUUID().toString(), String.class);
-			System.out.println("host: "+(hosts_lists.split(",")[port%3])+"port=" + port + " returns output " + output);
-		} catch (Exception g) {
-			childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
-		} finally {
-			childSpan.end();
-		}
-	}
+            RestTemplate restTemplate = new RestTemplate();
+
+            String output = restTemplate.getForObject(url, String.class);
+            System.out.println("child checking with =>" + url);
+        } catch (Exception g) {
+            childSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+        } finally {
+            childSpan.end();
+        }
+    }
 }
