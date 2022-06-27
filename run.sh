@@ -20,7 +20,7 @@ else
 HOME_DIR="/home/ubuntu/logicmonitor/heimdall";
 fi
 
-[[ ! -d "$HOME_DIR" ]] && echo "directory not present, aborting $HOME_DIR" && exit -1;
+[ ! -d "$HOME_DIR" ] && echo "directory not present, aborting $HOME_DIR" && exit -1;
 
 . $HOME_DIR/bin/functions.sh
  
@@ -128,10 +128,10 @@ function cleanup {
 
 function start {
    
+   $HOME_DIR/start_lmotel.sh
    cleanup
    [[ "$1" -eq "" ]] && Namespace="localdev"
 
-   $HOME_DIR/start_lmotel.sh
 
    createServicesDirectory "$Namespace"
    launch_java "$Namespace"
