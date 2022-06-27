@@ -11,17 +11,13 @@
                                                                                                                                
 # @Copyright LogicMonitor India LLP, 2022
 
-Namespace="$1"
-
-if [[ "$1" -eq "localdev" ]]; 
-then
-HOME_DIR="/Users/girishmahajan/Desktop/girishdev/heimdall"
-else
 HOME_DIR="/home/ubuntu/logicmonitor/heimdall";
-fi
+#HOME_DIR="/Users/girishmahajan/dev/heimdall";
 
 [ ! -d "$HOME_DIR" ] && echo "directory not present, aborting $HOME_DIR" && exit -1;
 
+[ "$#" -eq "0" ] && echo "abort no namespace given" && exit -35
+echo "GO GO GO GO"
 . $HOME_DIR/bin/functions.sh
  
 cd $HOME_DIR
@@ -130,11 +126,9 @@ function start {
    
    $HOME_DIR/start_lmotel.sh
    cleanup
-   [[ "$1" -eq "" ]] && Namespace="localdev"
-
-
-   createServicesDirectory "$Namespace"
-   launch_java "$Namespace"
+   
+   createServicesDirectory "$1"
+   launch_java "$1"
 }
 
 start "$1"

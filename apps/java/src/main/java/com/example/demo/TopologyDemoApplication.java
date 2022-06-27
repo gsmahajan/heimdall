@@ -57,7 +57,7 @@ public class TopologyDemoApplication {
 
 		Resource serviceResource = Resource.create(attrBuilders.build());
 		OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
-				.setEndpoint(System.getProperty("otel.exporter.otlp.endpoint", "http://localhost:4317"))
+				.setEndpoint(System.getProperty("otel.exporter.otlp.endpoint", "http://localhost:4318"))
 				.build();
 
 		SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
@@ -115,8 +115,10 @@ public class TopologyDemoApplication {
 							runChildSpanLocal(port, parentSpan);
 						}
 					});
-				}catch(Exception e){
-					//ignore
+				}catch (Exception g) {
+					parentSpan.setStatus(StatusCode.ERROR, "error calling internal APIs");
+				} finally {
+					parentSpan.end();
 				}
 
 				return ResponseEntity.ok(String.valueOf(ThreadLocalRandom.current().nextInt(10, 2000)));
@@ -131,7 +133,7 @@ public class TopologyDemoApplication {
 
 	public Set<Integer> getPortSet(String input){
 		String [] foo = input.split("-");
-		
+
 		Integer begin = Integer.parseInt(foo[0]);
 		Integer end = Integer.parseInt(foo[1]);
 
