@@ -4,7 +4,7 @@ export OTEL_METRICS_EXPORTER=logging
 export OTEL_TRACES_EXPORTER=logging
 
 
-java -javaagent:opentelemetry-javaagent-all.jar -Dotel.metrics.exporter=none -Dotel.traces.exporter=otlp -Dotel.resource.attributes=host.name=###app_name_host_alias###,service.name=###app_name###,service.namespace=###app_namspace###,ip=192.168.13.###app_ip### -Dotel.exporter.otlp.insecure=true -Dotel.exporter.otlp.endpoint=http://localhost:55680 -jar -Dserver.port=###app_port### demo-0.0.1-SNAPSHOT.jar
+java -javaagent:opentelemetry-javaagent-all.jar -Dotel.metrics.exporter=none -Dotel.traces.exporter=otlp -Dotel.resource.attributes=host.name=###app_name_host_alias###,service.name=###app_name###,service.namespace=###app_namspace###,ip=192.168.13.###app_ip### -Dotel.exporter.otlp.insecure=true -Dotel.exporter.otlp.endpoint=http://localhost:4318 -jar -Dserver.port=###app_port### demo-0.0.1-SNAPSHOT.jar
 
 
 

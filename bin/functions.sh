@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. env.sh
+. bin/env.sh
 
 function log {
 	echo $(date +%D-%T) "$1"
@@ -11,7 +11,7 @@ function run_python {
 }
 
 function generateSpans {
- for port in {12000..12050}; do curl -m 7 localhost:$port/apm/random; done
+ for port in {12000..12020}; do curl -m 7 localhost:$port/apm/random; done
  sleep 10
 }
 

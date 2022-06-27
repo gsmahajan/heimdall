@@ -11,24 +11,29 @@
                                                                                                                                
 # @Copyright LogicMonitor India LLP, 2022
 
+Namespace="$1"
 
-
+if [[ "$1" -eq "localdev" ]]; 
+then
+HOME_DIR="/Users/girishmahajan/Desktop/girishdev/heimdall"
+else
 HOME_DIR="/home/ubuntu/logicmonitor/heimdall";
+fi
 
-[ ! -d "$HOME_DIR" ] && echo "directory not present, aborting $HOME_DIR";
+[[ ! -d "$HOME_DIR" ]] && echo "directory not present, aborting $HOME_DIR" && exit -1;
 
 . $HOME_DIR/bin/functions.sh
  
 cd $HOME_DIR
 
-#../.bin/lmotel_config
 
 function build_java {
+ cd $HOME_DIR/apps/java/
+ mvn clean package
+ cd -
  for dir in $(ls); 
   do 
   cd $HOME_DIR/webapps/java_apps/$dir; 
-  #mvn clean package --maven.test.skip=true >> /dev/null 2>&1; 
-  #sleep 4
   cp $HOME_DIR/lib/opentelemetry*.jar target/; cd $HOME_DIR; done
 }
 
@@ -40,7 +45,7 @@ local app_name="$3"
 local app_ip="$4"
 #local endpoint="$5"
 local app_dir="$5"
-local appnamespace="logistics-run09"
+local appnamespace="$6"
 
 cd ../
 
@@ -62,7 +67,7 @@ cat target/template_lmotel_java5.txt >> target/startup.sh
 
 function launch_java {
   cd $HOME_DIR/webapps/java_apps
-
+ local namespace="$1"
  #killall java 
  build_java
   
@@ -79,7 +84,7 @@ function launch_java {
    local app_ip="$(echo $port | sed 's/^...//')"
   # local otlp_endpoint="http\://192\.168\.43\.71\:55680"
    local app_dir=$(echo $HOME_DIR/webapps/java_apps/$dir/target/) 
-   patch_template $host_alias $port $app_name $app_ip $app_dir #$otlp_endpoint
+   patch_template $host_alias $port $app_name $app_ip $app_dir #$otlp_endpoint $namespace
    cd target 
    chmod 755 startup.sh; 
    ./startup.sh >> $HOME_DIR/logs/$(echo "$dir" | tr '[:upper:]' '[:lower:]').log 2>&1 &  
@@ -91,7 +96,8 @@ function launch_java {
 }
 
 function createServicesDirectory {
- for dir in $(cat conf/$1.txt | tail -10 ); do cp -r $HOME_DIR/apps/java $HOME_DIR/webapps/java_apps/$(echo $dir | sed -e 's/.*://g' | sed -e 's/#.*//g'); done
+ 
+ for dir in $(cat conf/$1.txt | head -20); do cp -r $HOME_DIR/apps/java $HOME_DIR/webapps/java_apps/$(echo $dir | sed -e 's/.*://g' | sed -e 's/#.*//g'); done
 }
 
 function createServicesDirectory1 {
@@ -110,9 +116,8 @@ function createServicesDirectory1 {
 
 
 function cleanup {
-  rm -rf webapps*	
-  rm -rf logs
-  mv webapps webapps_$(date +%s | sed -e 's/://g')
+  [ -d webapps ] && rm -rf webapps* && mv webapps webapps_$(date +%s | sed -e 's/://g')
+  [ -d logs ] && rm -rf logs
   mkdir webapps
   cd webapps
   mkdir -p java_apps python_apps go_apps nodejs_apps ruby_apps dotnet_apps
@@ -122,9 +127,14 @@ function cleanup {
 
 
 function start {
+   
    cleanup
-   createServicesDirectory logistics
-   launch_java
+   [[ "$1" -eq "" ]] && Namespace="localdev"
+
+   $HOME_DIR/start_lmotel.sh
+
+   createServicesDirectory "$Namespace"
+   launch_java "$Namespace"
 }
 
-start
+start "$1"
