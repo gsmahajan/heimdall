@@ -1,10 +1,10 @@
 #!/bin/bash
 
-[ -d /home/ubuntu/logicmonitor ] && exit -1
+[ ! -d /home/ubuntu/logicmonitor ] && exit -1
 
 cd /home/ubuntu/logicmonitor/
 
-git clone https://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@github.com/gsmahajan/heimdall
+git clone https://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@github.com/gsmahajan/heimdall.git
 
 cd heimdall 
 
